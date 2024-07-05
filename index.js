@@ -1,31 +1,40 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { generateSvgTriangle, generateSvgCircle, generateSvgSquare } = require('./lib/shapes');
+// grab the module.exports from the shapes.js file in the lib folder.
+const { Triangle, Square, Circle } = require('./lib/shapes');
 
-
+// Questions variable with different input types for inquirer to use.
 const questions = [
     {
         type: 'input',
         name: 'text',
-        message: 'type in 3 characters for a text'
+        message: 'type in 3 characters for a text',
+        // This makes sure you can only put 3 max
+        validate: function (input) {
+            if (input.length <= 3) {
+                return true;
+            } else {
+                return 'You may only use 3 characters max'
+            }
+        }
     },
     {
         type: 'input',
         name: 'Tcolor',
         message: 'type in text color'
-        // PROB CAN PUT DIFF ACCEPTABLE COLORS INSTEAD. color keyword OR hexadecimal color
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'shape',
-        message: 'Type in your shape'
-        // circle, triangle, square (prob can use a different type to select them instead)
+        message: 'Pick a shape',
+        choices: [
+            'circle', 'square', 'triangle'
+        ]
     },
     {
         type: 'input',
         name: 'Scolor',
         message: 'Type in shape color'
-        // Color keyword or hexadecimal number
     }
 ]
 
@@ -34,18 +43,24 @@ function writeToFile(fileName, data) {
         err ? console.log(err) : console.log('Successfully Generated a SVG File!')
     })
 }
+
+// a function to create shapes based on inputs
 function init () {
+    // call the inquirer to create a questionnaire
     inquirer.prompt(questions)
     .then((answers) => {
         if(answers.shape === 'triangle') {
-            const official = generateSvgTriangle(answers);
-            writeToFile('./examples/DemoOfficial.svg', official);
+            const official = new Triangle(answers.text, answers.Tcolor, answers.Scolor);
+            svgString = official.generateSvgTriangle();
+            writeToFile('./examples/DemoOfficial.svg', svgString);
         } else if (answers.shape === 'circle') {
-            const official = generateSvgCircle(answers);
-            writeToFile('./examples/DemoOfficial.svg', official);
+            const official = new Circle(answers.text, answers.Tcolor, answers.Scolor);
+            svgString = official.generateSvgCircle();
+            writeToFile('./examples/DemoOfficial.svg', svgString);
         } else if (answers.shape === 'square') {
-            const official = generateSvgSquare(answers);
-            writeToFile('./examples/DemoOfficial.svg', official);
+            const official = new Square(answers.text, answers.Tcolor, answers.Scolor);
+            svgString = official.generateSvgSquare();
+            writeToFile('./examples/DemoOfficial.svg', svgString);
         } else {
             console.log('Invalid shape input');
         }
@@ -53,8 +68,6 @@ function init () {
 };
 
 init();
-
-
 
 
 
