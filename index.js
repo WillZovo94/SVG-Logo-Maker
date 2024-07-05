@@ -1,5 +1,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+const { generateSvgTriangle, generateSvgCircle, generateSvgSquare } = require('./lib/shapes');
+
 
 const questions = [
     {
@@ -9,7 +11,7 @@ const questions = [
     },
     {
         type: 'input',
-        name: 'text-color',
+        name: 'Tcolor',
         message: 'type in text color'
         // PROB CAN PUT DIFF ACCEPTABLE COLORS INSTEAD. color keyword OR hexadecimal color
     },
@@ -21,18 +23,34 @@ const questions = [
     },
     {
         type: 'input',
-        name: 'shape-color',
+        name: 'Scolor',
         message: 'Type in shape color'
         // Color keyword or hexadecimal number
     }
 ]
 
+function writeToFile(fileName, data) {
+    fs.writeFile(fileName, data, (err) => {
+        err ? console.log(err) : console.log('Successfully Generated a SVG File!')
+    })
+}
 function init () {
     inquirer.prompt(questions)
     .then((answers) => {
-        console.log(answers);
-    });
-}
+        if(answers.shape === 'triangle') {
+            const official = generateSvgTriangle(answers);
+            writeToFile('./examples/DemoOfficial.svg', official);
+        } else if (answers.shape === 'circle') {
+            const official = generateSvgCircle(answers);
+            writeToFile('./examples/DemoOfficial.svg', official);
+        } else if (answers.shape === 'square') {
+            const official = generateSvgSquare(answers);
+            writeToFile('./examples/DemoOfficial.svg', official);
+        } else {
+            console.log('Invalid shape input');
+        }
+    })
+};
 
 init();
 
